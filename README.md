@@ -1,54 +1,129 @@
-<h1>Integrative Project: Hotel Reservation Management for Laravel Suite with Email</h1>
+# 🏨 Integrative Project: Laravel Hotel Reservation Management Suite with Email Support
 
-STEPS ON HOW TO SETUP:
+A Laravel-based hotel reservation system that allows users to book rooms, receive email confirmations, and manage reservations efficiently.
 
-Ensure that you have XAMPP installed.
+---
 
-After cloning the repository, create a .env file inside the laraviel-suite folder.
+## 🚀 Getting Started
 
-After creating the .env file, change the values for MySQL:
+### ✅ Prerequisites
 
-Database Name: laraviel_suite
-The root, password, and port depend on the credentials of your XAMPP.
+- [XAMPP](https://www.apachefriends.org/index.html) (Apache, MySQL)
+- PHP >= 8.0
+- Composer
+- Laravel CLI
 
-Remove the comments first (#).
+---
 
-Default values:
->DB_CONNECTION: mysql
+## 🛠️ Setup Instructions
 
->DB_DATABASE: laraviel_suite (database name)
+### 1. Clone the Repository
 
->DB_HOST: 127.0.0.1
+```bash
+git clone https://github.com/your-username/laraviel-suite.git
+cd laraviel-suite
+```
 
->DB_USERNAME: root
+---
 
->DB_PASSWORD: none/empty
+### 2. Create the `.env` File
 
-For the email to work, make sure you have configured your app in Google:
+Inside the `laraviel-suite` folder, create a `.env` file manually or by copying the example:
 
->MAIL_MAILER=smtp
+```bash
+cp .env.example .env
+```
 
->MAIL_HOST=smtp.gmail.com
+Then update the following database configuration based on your XAMPP setup:
 
->MAIL_PORT=587
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=laraviel_suite
+DB_USERNAME=root
+DB_PASSWORD=   # Leave empty if no password
+```
 
->MAIL_USERNAME="username goes here same with your email"
+---
 
->MAIL_PASSWORD="your app password goes here"
+### 3. Configure Email (Gmail SMTP)
 
->MAIL_ENCRYPTION=tls
+Set up your Google App password and use it here:
 
->MAIL_FROM_ADDRESS="email you made for the website or your personal email"
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=your-email@gmail.com
+MAIL_PASSWORD=your-app-password
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=your-email@gmail.com
+MAIL_FROM_NAME="laraviel-suite"
+```
 
->MAIL_FROM_NAME="laraviel-suite"
+> ⚠️ **Important:** Use [Google App Passwords](https://support.google.com/accounts/answer/185833) instead of your Gmail password.
 
-Open terminal and run these commands:
+---
 
->cd laraviel-suite
+### 4. Install Dependencies
 
->composer install
+```bash
+composer install
+```
 
->php artisan migrate
+---
 
-After running these commands, serve the project:
->php artisan serve
+### 5. Generate Application Key
+
+```bash
+php artisan key:generate
+```
+
+---
+
+### 6. Run Database Migrations
+
+Ensure your MySQL server is running in XAMPP, then run:
+
+```bash
+php artisan migrate
+```
+
+---
+
+### 7. Start the Laravel Development Server
+
+```bash
+php artisan serve
+```
+
+Visit: [http://127.0.0.1:8000](http://127.0.0.1:8000)
+
+---
+
+## 💡 Features
+
+- 🛏️ Hotel room booking system
+- 📧 Email confirmations using Gmail SMTP
+- 📋 Admin and user dashboards
+- 📅 Reservation management
+- 🧾 Clean UI using Laravel Blade
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License — free for personal and commercial use.
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please fork the repo and submit a pull request.
+
+---
+
+## 📧 Contact
+
+For issues or collaboration, email: `your-email@gmail.com`
