@@ -126,4 +126,4 @@ Contributions are welcome! Please fork the repo and submit a pull request.
 
 ## 📧 Contact
 
-For issues or collaboration, email: `your-email@gmail.com`
+For issues or collaboration, email: `kirkfabonnnn@gmail.com`
