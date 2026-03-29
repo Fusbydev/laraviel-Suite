@@ -17,15 +17,20 @@ class DatabaseSeeder extends Seeder
     {
         DB::table('users')->insert([
             'name' => 'admin',
-            'email' => 'admin@gmail.com',
+            'email' => 'admin@laraviel.com',
             'role' => 'admin',
-            'password' => Hash::make('password'),
+            'password' => Hash::make('Admin@12345'),
         ]);
+
         DB::table('users')->insert([
             'name' => 'cashier',
-            'email' => 'cashier@gmail.com',
+            'email' => 'cashier@laraviel.com',
             'role' => 'cashier',
-            'password' => Hash::make('password'),
+            'password' => Hash::make('Cashier@12345'),
+        ]);
+
+        $this->call([
+            RoomPriceSeeder::class,
         ]);
     }
 }

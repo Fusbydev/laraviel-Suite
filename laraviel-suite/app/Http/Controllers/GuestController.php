@@ -84,18 +84,25 @@ class GuestController extends Controller
             'booking_id' => $validatedData['bookingId'],
         ]);
 
-        User::create([
-            'name' => $validatedData['firstname'],
-            'email' => $validatedData['email'],
-            'role' => 'guest',
-            'password' => Hash::make($validatedData['bookingId']),
-        ]);
+        User::firstOrCreate(
+            ['email' => $validatedData['email']],
+            [
+                'name' => $validatedData['firstname'],
+                'role' => 'guest',
+                'password' => Hash::make($validatedData['bookingId']),
+            ]
+        );
 
         session(['password' => $validatedData['bookingId']]);
+        
         // Send the booking confirmation email using SendReceipt
-        Mail::to($guest->email)->send(new SendReceipt($validatedData));
+        try {
+            Mail::to($guest->email)->send(new SendReceipt($validatedData));
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Email failed: ' . $e->getMessage());
+        }
 
-        return response()->json(['message' => 'Guest information submitted successfully and email sent!', 'data' => $guest], 201);
+        return response()->json(['message' => 'Guest information submitted successfully.', 'data' => $guest], 201);
     }
 
     /**
