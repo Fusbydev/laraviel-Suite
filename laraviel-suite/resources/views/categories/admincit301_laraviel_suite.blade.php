@@ -4,11 +4,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <title>Admin Dashboard | LARAVEIL SUITES</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <title>admin dashboard</title>
   <link href="{{ asset('css/admin.css') }}" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/x-icon">
 </head>
 
 <body>
@@ -22,12 +21,16 @@
       <img src="./images/logo.png" alt="" style="width: 100px;">
     </div>
     <div>
-      <a href="#dashboard" onclick="setActive(this)"><i class="bi bi-grid-1x2-fill"></i> Dashboard</a>
-      <a href="#customer" onclick="setActive(this)"><i class="bi bi-people-fill"></i> Customers</a>
-      <a href="#room-service" onclick="setActive(this)"><i class="bi bi-bell-fill"></i> Room Service</a>
-      <a href="#calendar" onclick="setActive(this)"><i class="bi bi-calendar3"></i> Calendar</a>
-      <a href="#room-management" onclick="setActive(this)"><i class="bi bi-building"></i> Room Management</a>
-      <a href="{{ route('register') }}" class="add-employee"><i class="bi bi-person-plus-fill"></i> Add Employee</a>
+      <a href="#dashboard" onclick="setActive(this)">Dashboard</a>
+      <a href="#customer" onclick="setActive(this)">Customer</a>
+      <a href="#room-service" onclick="setActive(this)">Room Service</a>
+      <a href="#calendar" onclick="setActive(this)">Calendar</a>
+      <a href="#room-management" onclick="setActive(this)">Room Management</a>
+      <a href="#income-tracker" onclick="setActive(this)">Income Tracker</a>
+      <a href="{{ route('registeremployee') }}" class="add-employee">
+        Add Employee
+      </a>
+      </form>
     </div>
     <footer class="mt-auto d-flex flex-column justify-content-center align-items-center text-center">
       <form method="POST" action="{{ route('logout') }}" class="d-inline">
@@ -36,7 +39,7 @@
           <i class="bi bi-box-arrow-right"></i> Logout
         </button>
       </form>
-      <p style="font-size: 12px;" class="mt-3">&copy; LARAVEIL SUITES</p>
+      <p style="font-size: 12px;" class="mt-3">&copy; Laraveil Suite.</p>
     </footer>
 
   </div>
@@ -46,19 +49,19 @@
   <div class="content">
     <!-- Dashboard Section -->
     <section id="dashboard">
-      <h1><i class="bi bi-speedometer2"></i> Dashboard</h1>
+      <h1>Dashboard<br /></h1>
       <div class="dashboard-container">
         <div class="card">
-          <h3><i class="bi bi-people"></i> Total Customers</h3>
+          <h3>Total Customers</h3>
           <p>{{ $totalGuests }}</p>
         </div>
         <div class="card">
-          <h3><i class="bi bi-door-open"></i> Total Rooms</h3>
+          <h3>Total Rooms</h3>
           <p>{{ $totalRooms }}</p>
         </div>
         <div class="card">
-          <h3><i class="bi bi-cash-stack"></i> Total Income</h3>
-          <p>₱{{ number_format($totalGuestPayments, 2) }}</p>
+          <h3>Total Income</h3>
+          <p>Php {{ number_format($totalGuestPayments, 2) }}</p>
         </div>
       </div>
     </section>
@@ -69,13 +72,6 @@
       @if(session('guestAlert'))
       <div class="alert alert-success alert-dismissible fade show" role="alert">
         {{ session('guestAlert') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
-      @endif
-
-      @if(session('success'))
-      <div class="alert alert-success alert-dismissible fade show" role="alert">
-        {{ session('success') }}
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
       </div>
       @endif
@@ -448,10 +444,10 @@
             @foreach($rooms as $room)
             <div class="col-md-6 col-lg-4 col-sm-12 mb-4">
               <div class="room d-flex flex-column text-center" style="height: 100%; display: flex; flex-direction: column;">
-                <img src="{{ asset($room->image_path) }}" alt="Room Image" class="img-fluid mb-3">
+                <img src="{{ $room->image_path }}" alt="Room Image" class="img-fluid mb-3">
                 <h4>{{ $room->room_type }}</h4>
                 <p>Description: {{ $room->description }}</p>
-                <p>Price: ₱{{ number_format($room->price->price ?? 0, 2) }}</p>
+                <p>Price: Php {{ number_format($room->price->price ?? 0, 2) }}</p>
 
 
                 <!-- Button Container -->
@@ -584,7 +580,34 @@
     @endforeach
 
 
-    <!-- Income tracker removed (Cashier restricted) -->
+    <div class="income-tracker container-fluid" id="income-tracker">
+      <h2>Income Tracker</h2>
+      <table>
+        <thead>
+          <tr>
+            <th class="text-center">Customer Name</th>
+            <th class="text-center">Availed Services</th>
+            <th class="text-center">Price</th>
+          </tr>
+        </thead>
+        <tbody id="incomeList">
+          <!-- Loop through the incomeTracker data -->
+          @foreach($incomeTracker as $income)
+          <tr>
+            <td class="text-center">{{ $income->customer_name }}</td>
+            <td class="text-center">{{ $income->availed_service }}</td>
+            <td class="text-center">Php {{ number_format($income->price, 2) }}</td>
+          </tr>
+          @endforeach
+        </tbody>
+      </table>
+
+      <!-- Pagination links -->
+      <div class="text-center">
+        {{ $incomeTracker->links('pagination::bootstrap-5') }}
+      </div>
+    </div>
+
 
   </div>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
