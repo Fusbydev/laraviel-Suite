@@ -178,6 +178,125 @@
         display: block;
     }
 
+    /* ── Room Cards for Booking ─────────────── */
+    .room-card {
+        background: rgba(254, 243, 226, 0.04);
+        border: 1px solid rgba(191, 167, 93, 0.15);
+        border-radius: 20px;
+        overflow: hidden;
+        transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .room-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+        border-color: var(--brand-gold);
+    }
+
+    .room-image-wrapper {
+        position: relative;
+        width: 100%;
+        height: 220px;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+
+    .room-image-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.8s ease;
+    }
+
+    .room-card:hover .room-image-wrapper img {
+        transform: scale(1.08);
+    }
+
+    .room-badge {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        background: var(--brand-gold);
+        color: var(--bg-deep);
+        padding: 4px 14px;
+        border-radius: 50px;
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+    }
+
+    .room-content {
+        padding: 24px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .room-type {
+        font-family: 'Kanit', sans-serif;
+        font-size: 1.1rem;
+        color: var(--brand-cream, #FEF3E2);
+        margin-bottom: 8px;
+    }
+
+    .room-description {
+        color: rgba(254, 243, 226, 0.6);
+        font-size: 0.82rem;
+        line-height: 1.6;
+        margin-bottom: 0;
+    }
+
+    .room-price-row {
+        margin-top: auto;
+    }
+
+    .price-label {
+        font-size: 0.6rem;
+        color: rgba(191, 167, 93, 0.7);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        display: block;
+    }
+
+    .price-value {
+        color: var(--brand-gold);
+        font-size: 1rem;
+        font-weight: 700;
+        font-family: 'Kanit', sans-serif;
+    }
+
+    .select-room-btn {
+        font-size: 0.75rem !important;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        font-weight: 600;
+        border-radius: 50px !important;
+        padding: 8px 24px !important;
+        transition: all 0.3s ease;
+    }
+
+    .select-room-btn:hover {
+        transform: scale(1.05);
+    }
+
+    /* ── Step 2 Room Grid ──────────────────── */
+    #step-2-content .standard-room .col-md-6,
+    #step-2-content .standard-room .col-lg-4 {
+        padding-bottom: 8px;
+    }
+
+    /* ── Confirmation Step ─────────────────── */
+    .glass-card {
+        background: rgba(254, 243, 226, 0.04);
+        border: 1px solid rgba(191, 167, 93, 0.2);
+        border-radius: 20px;
+        padding: 30px;
+    }
+
     /* ── Booking Summary ────────────────────── */
     .summary-sidebar {
         background: rgba(191, 167, 93, 0.05);
@@ -203,6 +322,14 @@
         font-size: 1.4rem;
         color: var(--brand-gold);
     }
+
+    /* ── Responsive Polish ─────────────────── */
+    @media (max-width: 768px) {
+        .booking-card { padding: 30px 20px; border-radius: 24px; }
+        .stepper { gap: 25px; margin-bottom: 40px; }
+        .room-image-wrapper { height: 180px; }
+        #step-2-content .standard-room { grid-template-columns: 1fr; }
+    }
 </style>
 @endsection
 
@@ -224,6 +351,10 @@
                 <span class="step-label">Resident Details</span>
             </div>
             <div class="step-item" id="step-4-indicator">
+                <div class="step-circle"></div>
+                <span class="step-label">Payment</span>
+            </div>
+            <div class="step-item" id="step-5-indicator">
                 <div class="step-circle"></div>
                 <span class="step-label">Confirmation</span>
             </div>
@@ -302,8 +433,37 @@
                         </div>
                     </div>
 
-                    <!-- Step 4: Final Confirmation -->
-                    <div id="step-4-content" class="d-none text-center">
+                    <!-- Step 4: Payment -->
+                    <div id="step-4-content" class="d-none">
+                        <h2 class="aboreto text-gold mb-5">Select Payment Method</h2>
+                        <div class="row g-4">
+                            <div class="col-md-12">
+                                <label class="luxury-label">Payment Type</label>
+                                <select class="form-control luxury-input mb-4" id="paymentMethodSelect">
+                                    <option value="over_the_counter">Pay at Counter</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Pay at Counter Info -->
+                        <div id="counterPaymentForm" class="payment-form">
+                            <div class="glass-card p-4 text-center">
+                                <i class="bi bi-wallet2 text-gold mb-3" style="font-size: 3rem;"></i>
+                                <h4 class="text-gold aboreto">Pay Upon Arrival</h4>
+                                <p class="text-cream opacity-75">Your reservation will be secured, and payment will be collected at the front desk during check-in. Your booking status will be pending until then.</p>
+                            </div>
+                        </div>
+
+                        <!-- Processing Animation -->
+                        <div id="paymentProcessing" class="d-none text-center py-5">
+                            <div class="spinner-border text-gold mb-3" role="status" style="width: 3rem; height: 3rem;"></div>
+                            <h4 class="text-gold aboreto">Processing Payment...</h4>
+                            <p class="text-cream opacity-75">Please do not close or refresh this page.</p>
+                        </div>
+                    </div>
+
+                    <!-- Step 5: Final Confirmation -->
+                    <div id="step-5-content" class="d-none text-center">
                         <div class="py-5" data-aos="zoom-in">
                             <i class="bi bi-check2-circle text-gold mb-4" style="font-size: 5rem;"></i>
                             <h2 class="aboreto text-gold mb-3 greeting">Request Confirmed</h2>

@@ -35,19 +35,19 @@ document.addEventListener("DOMContentLoaded", function () {
                     <div class="col-md-6 col-lg-4 mb-4" data-aos="fade-up">
                         <div class="room-card">
                             <div class="room-image-wrapper">
-                                <img src="/${room.image_path.replace(/^\//, '')}" alt="${room.room_type}">
+                                <img src="/${room.image_path.replace(/^\//, '')}" alt="${room.room_type}" loading="lazy">
                                 <span class="room-badge">${room.room_type.split(' ')[0]}</span>
                             </div>
-                            <div class="room-content p-4">
-                                <h3 class="room-type h5">${room.room_type}</h3>
-                                <p class="room-description small text-cream opacity-75">${room.description.substring(0, 100)}...</p>
+                            <div class="room-content">
+                                <h3 class="room-type">${room.room_type}</h3>
+                                <p class="room-description">${room.description.substring(0, 90)}...</p>
                                 
-                                <div class="room-price-row mt-auto pt-3 border-top border-gold border-opacity-10 d-flex justify-content-between align-items-center">
+                                <div class="room-price-row pt-3 mt-auto border-top border-gold border-opacity-10 d-flex justify-content-between align-items-center">
                                     <div>
-                                        <span class="price-label small text-gold">Price/Night</span>
-                                        <h4 class="price-value h6 mb-0">₱${parseFloat(room.price).toLocaleString()}</h4>
+                                        <span class="price-label">Per Night</span>
+                                        <span class="price-value">₱${parseFloat(room.price).toLocaleString()}</span>
                                     </div>
-                                    <button class="btn btn-premium-solid btn-sm px-4 select-room-btn" 
+                                    <button class="btn btn-premium-solid btn-sm select-room-btn" 
                                             data-id="${room.id}" 
                                             data-type="${room.room_type}" 
                                             data-price="${room.price}">
@@ -82,11 +82,17 @@ document.addEventListener("DOMContentLoaded", function () {
                         if (this.innerText === "Selected") {
                             this.innerText = "Select";
                             this.classList.replace("btn-light", "btn-premium-solid");
-                            selectedRooms = selectedRooms.filter(r => r.id !== roomId);
+                            selectedRooms = [];
                         } else {
+                            // Deselect all others
+                            document.querySelectorAll(".select-room-btn").forEach(b => {
+                                b.innerText = "Select";
+                                b.classList.replace("btn-light", "btn-premium-solid");
+                            });
+                            // Select this one
                             this.innerText = "Selected";
                             this.classList.replace("btn-premium-solid", "btn-light");
-                            selectedRooms.push({ id: roomId, type: roomType, price: price });
+                            selectedRooms = [{ id: roomId, type: roomType, price: price }];
                         }
                         updateSummary();
                     });
@@ -115,8 +121,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const updateSummary = () => {
         const roomListElem = document.querySelector(".booked-rooms");
-        const totalDisplay = document.querySelector(".totalPriceDisplay");
-        if(!roomListElem || !totalDisplay) return;
+        if(!roomListElem) return;
 
         const nightsInput = document.querySelector("#totalNightsInput");
         const nights = nightsInput ? parseInt(nightsInput.value) || 0 : 0;
@@ -128,8 +133,22 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         totalPrice = selectedRooms.reduce((acc, r) => acc + (r.price * nights), 0);
-        totalDisplay.textContent = `₱${totalPrice.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+        
+        document.querySelectorAll(".totalPriceDisplay").forEach(display => {
+            display.textContent = `₱${totalPrice.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+        });
     };
+
+    // ── Payment Form Toggle ────────────────────
+    const paymentMethodSelect = document.getElementById('paymentMethodSelect');
+    if (paymentMethodSelect) {
+        paymentMethodSelect.addEventListener('change', function(e) {
+            document.querySelectorAll('.payment-form').forEach(el => el.classList.add('d-none'));
+            if (e.target.value === 'over_the_counter') {
+                document.getElementById('counterPaymentForm').classList.remove('d-none');
+            }
+        });
+    }
 
     // ── Step Navigation ────────────────────────
     const switchStep = (step) => {
@@ -145,10 +164,45 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
+        // Validation for step 3
+        if (step === 4) {
+            const reqFields = ["firstname", "lastname", "email", "contactNumber", "address"];
+            const isComplete = reqFields.every(id => document.getElementById(id).value.trim() !== "");
+            if (!isComplete) {
+                alert("Please complete the Resident Profile.");
+                return;
+            }
+        }
+
+        // Processing payment (transition from 4 to 5)
+        if (step === 5) {
+            // Show processing
+            const paymentForms = document.querySelectorAll(".payment-form");
+            paymentForms.forEach(el => el.classList.add("d-none"));
+            if(document.getElementById("paymentMethodSelect")) document.getElementById("paymentMethodSelect").classList.add("d-none");
+            const labels = document.querySelectorAll("#step-4-content label");
+            labels.forEach(el => el.classList.add("d-none"));
+            
+            const processingNode = document.getElementById("paymentProcessing");
+            if(processingNode) processingNode.classList.remove("d-none");
+            
+            const stepNav = document.getElementById("step-navigation");
+            if(stepNav) stepNav.classList.add("d-none");
+            
+            setTimeout(() => {
+                submitBooking();
+                renderSwitch(5);
+            }, 2000);
+            return;
+        }
+
+        renderSwitch(step);
+    };
+
+    const renderSwitch = (step) => {
         currentStep = step;
 
-        // Hide all steps
-        for(let i=1; i<=4; i++) {
+        for(let i=1; i<=5; i++) {
             const content = document.getElementById(`step-${i}-content`);
             if(content) content.classList.add("d-none");
             
@@ -156,40 +210,37 @@ document.addEventListener("DOMContentLoaded", function () {
             if(indicator) indicator.classList.remove("active");
         }
 
-        // Show active step
         const activeContent = document.getElementById(`step-${currentStep}-content`);
         if(activeContent) activeContent.classList.remove("d-none");
         
         const activeIndicator = document.getElementById(`step-${currentStep}-indicator`);
         if(activeIndicator) activeIndicator.classList.add("active");
 
-        // Scroll Top
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
-        // Update nav buttons
         const prevBtn = document.getElementById("prevBtn");
         const nextBtn = document.getElementById("nextBtn");
         
         if (prevBtn) {
-            if (currentStep === 1 || currentStep === 4) prevBtn.classList.add("d-none");
+            if (currentStep === 1 || currentStep === 5) prevBtn.classList.add("d-none");
             else prevBtn.classList.remove("d-none");
         }
 
         if (nextBtn) {
-            if (currentStep === 4) nextBtn.classList.add("d-none");
-            else nextBtn.innerText = currentStep === 3 ? "Complete Residency" : "Continue Journey";
+            if (currentStep === 5) nextBtn.classList.add("d-none");
+            else if (currentStep === 4) nextBtn.innerText = "Confirm & Pay";
+            else nextBtn.innerText = "Continue Journey";
         }
-
-        if (currentStep === 4) submitBooking();
         
-        // Micro-animation
-        anime({
-            targets: activeContent,
-            opacity: [0, 1],
-            translateY: [20, 0],
-            duration: 800,
-            easing: 'easeOutCubic'
-        });
+        if(activeContent) {
+            anime({
+                targets: activeContent,
+                opacity: [0, 1],
+                translateY: [20, 0],
+                duration: 800,
+                easing: 'easeOutCubic'
+            });
+        }
     };
 
     if (document.getElementById("nextBtn")) {
@@ -339,7 +390,9 @@ document.addEventListener("DOMContentLoaded", function () {
             checkIn: checkInDate,
             checkOut: checkOutDate,
             bookedRooms: selectedRooms.map(r => r.type).join(", "),
-            priceTotal: totalPrice
+            priceTotal: totalPrice,
+            paymentMethod: 'over_the_counter',
+            paymentStatus: 'pending'
         };
 
         const greeting = document.querySelector(".greeting");

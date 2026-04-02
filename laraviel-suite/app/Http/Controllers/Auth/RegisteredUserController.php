@@ -33,7 +33,7 @@ class RegisteredUserController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email'],
-            'role' => ['required', 'string', 'in:admin,cashier,guest'],
+            'role' => ['required', 'string', 'in:super_admin,admin,cashier,guest'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
@@ -56,7 +56,7 @@ class RegisteredUserController extends Controller
         Auth::login($user);
 
         // Redirect based on the role
-        if ($user->role == 'admin') {
+        if ($user->role == 'super_admin' || $user->role == 'admin') {
             return redirect(route('admin', absolute: false));
         } elseif ($user->role == 'cashier') {
             return redirect(route('cashier', absolute: false));

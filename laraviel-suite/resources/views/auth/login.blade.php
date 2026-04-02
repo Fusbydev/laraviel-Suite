@@ -349,22 +349,24 @@
 
                 <div class="field-group mb-4">
                     <label for="password" class="form-label">Security Password</label>
-                    <input type="password" name="password" id="password" class="form-control"
-                           placeholder="••••••••" required>
+                    <div class="input-group">
+                        <input type="password" name="password" id="password" class="form-control"
+                               placeholder="••••••••" required style="border-right: none;">
+                        <button class="btn" type="button" onclick="togglePass('password', this)" 
+                                style="background: rgba(254, 243, 226, 0.04); border: 1px solid rgba(254, 243, 226, 0.12); border-left: none; color: var(--brand-cream);">
+                            <i class="bi bi-eye-slash"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="meta-row">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="remember" id="remember">
-                        <label class="form-check-label" for="remember">Remember me</label>
-                    </div>
                     @if (Route::has('password.request'))
-                        <a href="{{ route('password.request') }}" class="forgot-link">Forgot Access?</a>
+                        <a href="{{ route('password.request') }}" class="forgot-link" style="margin-left: auto;">Forgot Access?</a>
                     @endif
                 </div>
 
                 <button type="submit" class="btn-premium" id="submitBtn">
-                    <span id="btnText">Access System</span>
+                    <span id="btnText">Log In</span>
                 </button>
             </form>
 
@@ -382,6 +384,18 @@
             btn.classList.add('loading');
             text.textContent = 'Verifying...';
         });
+
+        function togglePass(fieldId, btn) {
+            const input = document.getElementById(fieldId);
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('bi-eye-slash', 'bi-eye');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('bi-eye', 'bi-eye-slash');
+            }
+        }
     </script>
 </body>
 </html>

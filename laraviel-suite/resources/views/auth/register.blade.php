@@ -258,8 +258,7 @@
                         <select id="role" name="role" class="form-select" required>
                             <option value="" disabled selected>Choose a level of access</option>
                             <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Administrator</option>
-                            <option value="cashier" {{ old('role') == 'cashier' ? 'selected' : '' }}>Cashier / Staff</option>
-                            <option value="guest" {{ old('role') == 'guest' ? 'selected' : '' }}>Client / Guest</option>
+                            <option value="cashier" {{ old('role') == 'cashier' ? 'selected' : '' }}>Cashier</option>
                         </select>
                         @if($errors->has('role'))
                             <div class="text-danger">{{ $errors->first('role') }}</div>
@@ -269,8 +268,14 @@
                     <!-- Password -->
                     <div class="col-md-6">
                         <label for="password" class="form-label">Security Password</label>
-                        <input id="password" type="password" name="password" class="form-control" 
-                               placeholder="Min. 8 characters" required>
+                        <div class="input-group">
+                            <input id="password" type="password" name="password" class="form-control" 
+                                   placeholder="Min. 8 characters" required style="border-right: none;">
+                            <button class="btn" type="button" onclick="togglePass('password', this)" 
+                                    style="background: rgba(254, 243, 226, 0.04); border: 1px solid rgba(191, 167, 93, 0.15); border-left: none; color: var(--brand-cream);">
+                                <i class="bi bi-eye-slash"></i>
+                            </button>
+                        </div>
                         @if($errors->has('password'))
                             <div class="text-danger">{{ $errors->first('password') }}</div>
                         @endif
@@ -279,8 +284,14 @@
                     <!-- Confirm Password -->
                     <div class="col-md-6">
                         <label for="password_confirmation" class="form-label">Confirm Key</label>
-                        <input id="password_confirmation" type="password" name="password_confirmation" 
-                               class="form-control" placeholder="Re-type password" required>
+                        <div class="input-group">
+                            <input id="password_confirmation" type="password" name="password_confirmation" 
+                                   class="form-control" placeholder="Re-type password" required style="border-right: none;">
+                            <button class="btn" type="button" onclick="togglePass('password_confirmation', this)" 
+                                    style="background: rgba(254, 243, 226, 0.04); border: 1px solid rgba(191, 167, 93, 0.15); border-left: none; color: var(--brand-cream);">
+                                <i class="bi bi-eye-slash"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -296,5 +307,18 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function togglePass(fieldId, btn) {
+            const input = document.getElementById(fieldId);
+            const icon = btn.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('bi-eye-slash', 'bi-eye');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('bi-eye', 'bi-eye-slash');
+            }
+        }
+    </script>
 </body>
 </html>

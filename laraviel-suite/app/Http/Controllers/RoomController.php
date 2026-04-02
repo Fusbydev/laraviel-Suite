@@ -81,9 +81,10 @@ class RoomController extends Controller
 
         // Log data to check the insertion
 
-        return redirect()->route('rooms.index')->with('success', 'Room added successfully!');
+        return redirect()->route('admin')->with('success', 'Room added successfully!');
     } catch (\Exception $e) {
-        return redirect()->back()->with('error', 'There was an error adding the room.');
+        \Illuminate\Support\Facades\Log::error('Error adding room: ' . $e->getMessage());
+        return redirect()->back()->with('error', 'There was an error adding the room: ' . $e->getMessage());
     }
 }
 
