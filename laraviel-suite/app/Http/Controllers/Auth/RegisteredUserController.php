@@ -48,12 +48,7 @@ class RegisteredUserController extends Controller
         // Trigger the Registered event
         event(new Registered($user));
 
-        // Check if an Admin is adding an employee or a guest is registering
-        if (Auth::check() && Auth::user()->role === 'admin') {
-            return redirect(route('admin', absolute: false))->with('success', "Employee {$user->name} successfully added!");
-        }
-
-        Auth::login($user);
+            Auth::login($user);
 
         // Redirect based on the role
         if ($user->role == 'super_admin' || $user->role == 'admin') {
@@ -61,9 +56,7 @@ class RegisteredUserController extends Controller
         } elseif ($user->role == 'cashier') {
             return redirect(route('cashier', absolute: false));
         } elseif ($user->role == 'guest') {
-            return redirect(route('view-booking', absolute: false));
+            return redirect(route('view-booking', absolute: false)); // guest route (example)
         }
-
-        return redirect(route('landing', absolute: false));
     }
 }

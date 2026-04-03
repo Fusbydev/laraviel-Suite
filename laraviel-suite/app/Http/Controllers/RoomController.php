@@ -68,7 +68,7 @@ class RoomController extends Controller
         if ($request->hasFile('image')) {
             $roomImageName = 'room_' . time() . '.' . $request->file('image')->extension();
             $request->file('image')->move(public_path('images/roomImage'), $roomImageName);
-            $imagePath = 'images/roomImage/' . $roomImageName;
+            $imagePath = './images/roomImage/' . $roomImageName;
         }
 
         // Create a new room and associate the price ID (not the price itself)
@@ -127,13 +127,13 @@ public function update(Request $request, $id)
     // Check if an image is uploaded
     if ($request->hasFile('image')) {
         // Generate a unique name for the image, including the room ID
-        $roomImageName = 'room_' . time() . '.' . $request->file('image')->extension();
-        
-        // Move the uploaded image to the 'public/images/roomImage' folder
+        $roomImageName = 'room_' .time(). '.' . $request->file('image')->extension();
+        echo $roomImageName;
+        // Move the uploaded image to the 'public/images' folder
         $request->file('image')->move(public_path('images/roomImage'), $roomImageName);
 
-        // Standardized path storage
-        $imagePath = 'images/roomImage/' . $roomImageName;
+        // Get the path to the uploaded image
+        $imagePath = './images/roomImage/' . $roomImageName;
 
         // Update the room's image path
         $room->image_path = $imagePath;

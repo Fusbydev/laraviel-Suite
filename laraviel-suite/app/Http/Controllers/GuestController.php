@@ -118,15 +118,10 @@ class GuestController extends Controller
         );
 
         session(['password' => $validatedData['bookingId']]);
-        
         // Send the booking confirmation email using SendReceipt
-        try {
-            Mail::to($guest->email)->send(new SendReceipt($validatedData));
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Email failed: ' . $e->getMessage());
-        }
+        Mail::to($guest->email)->send(new SendReceipt($validatedData));
 
-        return response()->json(['message' => 'Guest information submitted successfully.', 'data' => $guest], 201);
+        return response()->json(['message' => 'Guest information submitted successfully and email sent!', 'data' => $guest], 201);
     }
 
     /**

@@ -24,20 +24,15 @@ class DatabaseSeeder extends Seeder
 
         DB::table('users')->insert([
             'name' => 'admin',
-            'email' => 'admin@laraviel.com',
+            'email' => 'admin@gmail.com',
             'role' => 'admin',
-            'password' => Hash::make('Admin@12345'),
+            'password' => Hash::make('password'),
         ]);
-
         DB::table('users')->insert([
             'name' => 'cashier',
-            'email' => 'cashier@laraviel.com',
+            'email' => 'cashier@gmail.com',
             'role' => 'cashier',
-            'password' => Hash::make('Cashier@12345'),
-        ]);
-
-        $this->call([
-            RoomPriceSeeder::class,
+            'password' => Hash::make('password'),
         ]);
     }
 }
