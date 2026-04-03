@@ -14,39 +14,26 @@ class RoleManager
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next, $role): Response
+    public function handle(Request $request, Closure $next, ...$roles): Response
     {
-        if(!Auth::check ()){
-            return response()->json(['message' => 'Unauthorized'], 401);
+        if(!Auth::check()){
+            return redirect()->route('login');
         }
 
-        $authUserType = Auth::user()->role;
+        $userRole = Auth::user()->role;
 
-        switch($role) {
-            case 'admin':
-                if($authUserType == 'admin') {
-                    return $next($request);
-                }
-                break;
-            case 'cashier':
-                if($authUserType == 'cashier') {
-                    return $next($request);
-                }
-                break;
+        // Check if user's role is in the allowed roles list
+        if (in_array($userRole, $roles)) {
+            return $next($request);
         }
 
-        switch($authUserType) {
-            case 'admin':
-                return redirect()->route('admin');
-
-            case 'cashier':
-                return redirect()->route('cashier');
-            
-            case 'guest':
-                return redirect()->route('offers');
+        // Redirect to appropriate dashboard based on their role
+        if ($userRole === 'admin') {
+            return redirect()->route('admin');
+        } elseif ($userRole === 'cashier') {
+            return redirect()->route('cashier');
         }
 
-        return redirect()->route('auth.login');
-
+        return redirect()->route('landing');
     }
 }
